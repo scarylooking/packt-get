@@ -1,6 +1,7 @@
 var page = require('webpage').create();
 var credentials = require('./secrets').credentials;
 var loadInProgress = false;
+var claimUrl = null;
 var testindex = 0;
 
 page.onConsoleMessage = function(msg) {
@@ -15,11 +16,16 @@ page.onLoadStarted = function() {
   loadInProgress = true;
 };
 
+phantom.onError = function(msg, trace) {
+  console.log('ERR >> ' + msg);
+  phantom.exit(1);
+};
+
 page.onLoadFinished = function(status) {
   loadInProgress = false;
   if (status !== 'success') {
-    console.error('Something went wrong');
-    phantom.exit();
+    console.log('ERR >> Failed to load page');
+    phantom.exit(1);
   }
 };
 
@@ -34,11 +40,15 @@ function loadPackt() {
 function getClaimUrl() {
   console.log("Getting claim URI...");
 
-  claim_url = page.evaluate(function() {
+  claimUrl = page.evaluate(function() {
     return $(".twelve-days-claim").attr('href');
   });
 
-  console.log('>> https://www.packtpub.com' + claim_url);
+  if (!claimUrl) {
+    throw "Failed to locate claim URL.";
+  } else {
+    console.log('>> https://www.packtpub.com' + claimUrl);
+  }
 }
 
 function loginToPacktAccount() {
@@ -59,11 +69,12 @@ function clickClaimButton() {
   });
 }
 
-function getClaimedTitle() {
+function navigateToClaimedTitleListingPage() {
   console.log("Loading claimed titles list...");
-
   page.open('https://www.packtpub.com/account/my-ebooks');
+}
 
+function getClaimedTitle() {
   var title = page.evaluate(function() {
     return $($(".product-line")[0]).attr('title');
   });
@@ -88,7 +99,8 @@ var steps = [
   getClaimUrl,
   loginToPacktAccount,
   clickClaimButton,
+  navigateToClaimedTitleListingPage,
   getClaimedTitle
 ];
 
-interval = setInterval(executeStep, 500);
+interval = setInterval(executeStep, 10);
