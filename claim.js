@@ -1,9 +1,19 @@
 var credentials = require('./secrets').credentials;
-var casper = require('casper').create();
+var casper = require('casper').create({
+  // verbose: true,
+  // logLevel: "debug",
+  stepTimeout: 5000,
+  pageSettings: {
+    loadImages: false,
+    loadPlugins: false // use these settings
+  },
+});
 
 var todaysTitle = "";
 
-casper.start('https://www.packtpub.com/packt/offers/free-learning', function() {
+casper.start('https://www.packtpub.com/packt/offers/free-learning');
+
+casper.then(function() {
   todaysTitle = this.evaluate(function() {
     return document.querySelector('.dotd-title h2').firstChild.nodeValue.trim();
   });
@@ -31,7 +41,7 @@ casper.then(function() {
 });
 
 casper.then(function() {
-  if (this.exists('.messages.error')) {
+  if (this.exists('.messages.error') || this.visible('.respoLogin')) {
     this.echo('ERROR: Login Failed!', 'ERROR');
     this.exit();
   } else {
