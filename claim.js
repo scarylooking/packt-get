@@ -2,7 +2,7 @@ var credentials = require('./secrets').credentials;
 var casper = require('casper').create({
   // verbose: true,
   // logLevel: "debug",
-  stepTimeout: 5000,
+  stepTimeout: 20000,
   pageSettings: {
     loadImages: false,
     loadPlugins: false // use these settings
@@ -69,10 +69,11 @@ casper.thenOpen('https://www.packtpub.com/account/my-ebooks', function() {
   } else {
     this.echo('ERROR: The last book in your library doesn\'t match todays title. Maybe you already claimed it?', 'ERROR');
 
-    this.wait(15000, function() {
+    this.wait(30000, function() {
       this.exit();
     });
   }
+
 });
 
 casper.run(function() {
