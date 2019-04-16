@@ -1,6 +1,8 @@
 # packt-get
 An automated tool that gets the Packt free eBook of the day
 
+**I'm pretty sure this doesn't work anymore**
+
 ## Requirements
 * [PhantomJS 2.1.1](http://phantomjs.org/download.html)
 * [CasperJS 1.1](http://casperjs.org/)
